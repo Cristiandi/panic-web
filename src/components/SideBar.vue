@@ -1,10 +1,26 @@
 <template>
   <div id="mySidebar" class="sidebar">
-    <span class="closebtn" @click.prevent="closeSideBar"> × </span>
+    <a class="closebtn" href="#" @click.prevent="closeSideBar"> × </a>
+
+    <div>
+      <div class="text-center">
+        <img src="../assets/logo.png" alt="logo" />
+      </div>
+      <br/>
+      <div class="text-center">
+        <span class="font-weight-bold">Hola Usuario</span>
+      </div>
+      <div>
+        <router-link class="font-weight-bold" to="/home">Edita tús datos.</router-link>
+        <router-link class="font-weight-bold" to="/home">Cambia tú clave.</router-link>
+        <router-link class="font-weight-bold" to="/home">Maneja tús contactos.</router-link>
+      </div>
+    </div>
+
     <div class="fixed-bottom bottom">
         <hr>
         <div class="text-center">
-            <span class="font-weight-bold" @click="logout">Cerrar sesión</span>
+            <a href="#" class="font-weight-bold" @click.prevent="logout">Cerrar sesión</a>
         </div>
     </div>
   </div>
@@ -23,6 +39,24 @@
   background-color: #c4c4c4 !important;
 }
 
+.sidebar a {
+  padding: 8px 8px 8px 10px;
+  text-decoration: none;
+  font-size: 1rem;
+  color: black;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidebar span {
+  padding: 8px 8px 8px 10px;
+  text-decoration: none;
+  font-size: 1rem;
+  color: black;
+  display: block;
+  transition: 0.3s;
+}
+
 .sidebar .closebtn {
   position: absolute;
   top: 0;
@@ -35,6 +69,13 @@
 .bottom {
   width: 300px;
 }
+
+hr {
+  border: 2px solid black;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
 /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
 @media screen and (max-height: 450px) {
   .sidebar {
