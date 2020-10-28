@@ -6,7 +6,7 @@ import { auth } from '../firebase';
 import Login from '../views/Login.vue';
 import Signup from '../views/Signup.vue';
 import Home from '../views/Home';
-import Resetpassword from '../views/Resetpassword.vue';
+import ForgottenPassword from '../views/ForgottenPassword.vue';
 
 const routes = [
   {
@@ -23,9 +23,9 @@ const routes = [
     component: Signup
   },
   {
-    path: '/reset-password',
-    name: 'Resetpassword',
-    component: Resetpassword
+    path: '/forgotten-password',
+    name: 'Forgotten',
+    component: ForgottenPassword
   },
   {
     name: 'Home',

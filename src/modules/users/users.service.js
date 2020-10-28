@@ -6,15 +6,17 @@ import { auth } from '../../firebase';
 class UserService {
     constructor() {
         this.baseUrl = enviroment.API_BASE_URL;
+
     }
 
-    async register ({
+    async register({
         email,
         phone,
         fullName,
         password
     }) {
         console.log('EXECUTING REGISTER');
+        
         const response = await axios({
             url: `${this.baseUrl}users`,
             method: 'post',
@@ -37,13 +39,30 @@ class UserService {
     async login ({ email, password }) {
         console.log('EXECUTING LOGIN');
         const { user } = await auth.signInWithEmailAndPassword(email, password);
-        
+
         return user;
     }
 
     async logout() {
         await auth.signOut();
     }
-}
+
+    async resetPassword({ email }) {
+        console.log('EXECUTING RESET PASSWORD');
+
+        const response = await axios({
+            url: `${this.baseUrl}users/send-forgotten-password-email`,
+            method: 'post',
+            data: {
+                email
+            }
+        });
+
+        return {
+            ...response.data,
+            message: 'Te enviamos un correo, revisalo.'
+        };
+    }
+} 
 
 export const userService = new UserService();

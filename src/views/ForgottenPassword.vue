@@ -9,9 +9,6 @@
           v-slot="{ errors }"
           :validation-schema="schema"
         >
-          <div class="form-group text-center">
-            <img src="../assets/logo.png" alt="logo" />
-          </div>
           <div class="form-group">
             <div class="row">
               <div class="col-6">
@@ -19,7 +16,7 @@
               </div>
               <div class="col-6 text-right">
                 <small for="email" class="font-weight-lighter"
-                  >Pon tú email.</small
+                  >Digita tu email para comenzar.</small
                 >
               </div>
             </div>
@@ -33,31 +30,11 @@
             />
             <span class="validation">{{ errors.email }}</span>
           </div>
-          <div class="form-group">
-            <div class="row">
-              <div class="col-6">
-                <label for="password" class="font-weight-bold">Clave</label>
-              </div>
-              <div class="col-6 text-right">
-                <small for="password" class="font-weight-lighter"
-                  >Pon tú clave.</small
-                >
-              </div>
-            </div>
-            <Field
-              type="password"
-              class="form-control"
-              id="password"
-              name="password"
-              as="input"
-              v-model="data.password"
-            />
-            <span class="validation">{{ errors.password }}</span>
-          </div>
-          <div class="form-group" v-if="message">
+          <div v-if="message" class="form-group">
             <div
-              :class="successful ? 'alert-success' : 'alert-danger'"
+              class="alert"
               role="alert"
+              :class="successful ? 'alert-success' : 'alert-danger'"
             >
               {{ message }}
             </div>
@@ -69,15 +46,8 @@
           </div>
           <div v-if="!loading" class="form-group">
             <button type="submit" class="btn btn-primary btn-block">
-              Iniciar sesión
+              Continuar
             </button>
-          </div>
-          <div class="form-group text-center">
-            <router-link to="/forgotten-password"
-              >¿Olvidaste tu clave?</router-link
-            >
-            <br />
-            <router-link to="/signup">¿No tienes cuenta?</router-link>
           </div>
         </Form>
       </div>
@@ -102,15 +72,17 @@
 <script>
 import { Field, Form } from 'vee-validate';
 import * as Yup from 'yup';
-
+import { userService } from '../modules/users/users.service';
+//esta importacion que es lo que hace ?
+import { getFromObjectPathParsed } from '../utils';
 export default {
-  name: 'Login',
+  name: 'ForgottentPassword',
   data() {
     return {
       data: {
-        email: '',
-        password: ''
+        email: ''
       },
+      successful: false,
       loading: false,
       message: ''
     };
@@ -122,8 +94,7 @@ export default {
   setup() {
     // Using yup to generate a validation schema
     const schema = Yup.object().shape({
-      email: Yup.string().email().required(),
-      password: Yup.string().min(6).required()
+      email: Yup.string().email().required()
     });
 
     return {
@@ -137,17 +108,18 @@ export default {
       this.loading = true;
 
       try {
-        const { email, password } = this.data;
-
-        await this.$store.dispatch('login', {
-          email,
-          password
+        const { message } = await userService.resetPassword({
+          email: this.data.email
         });
+        this.successful = true;
+        this.message = message;
       } catch (error) {
-        console.log('error making the logiun', error);
-        this.message = error.message;
+        this.successful = false;
+        console.log('error', error.response);
+        this.message =
+          getFromObjectPathParsed(error, 'response.data.message') ||
+          error.message;
       }
-
       this.loading = false;
     }
   }
