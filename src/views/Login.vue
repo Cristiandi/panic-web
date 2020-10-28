@@ -55,10 +55,7 @@
             <span class="validation">{{ errors.password }}</span>
           </div>
           <div class="form-group" v-if="message">
-            <div
-              :class="successful ? 'alert-success' : 'alert-danger'"
-              role="alert"
-            >
+            <div class="alert alert-danger" role="alert">
               {{ message }}
             </div>
           </div>
