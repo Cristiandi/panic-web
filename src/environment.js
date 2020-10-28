@@ -1,5 +1,5 @@
 const enviroment = {
-    API_BASE_URL: process.VUE_APP_API_BASE_URL,
+    API_BASE_URL: process.env.VUE_APP_API_BASE_URL,
     /* FIREBASE */
     FIREBASE_API_KEY: process.env.VUE_APP_FIREBASE_API_KEY,
     FIREBASE_AUTH_DOMAIN: process.env.VUE_APP_FIREBASE_AUTH_DOMAIN,
