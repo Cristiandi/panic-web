@@ -32,25 +32,32 @@ export default createStore({
       // sign user in
       const user = await userService.login({ email, password });
 
-      dispatch('setCurrentUser', user);
+      await dispatch('setCurrentUser', user);
     },
     async setCurrentUser({ commit }, user) {
+      const meInformation = await userService.me({ uuid: user.uid });
+
       // set user in state
-      commit('setUser', user);
+      commit('setUser', {
+        ...user,
+        id: meInformation.id,
+        fullName: meInformation.full_name,
+        firstName: meInformation.full_name.split(' ')[0],
+        phone: meInformation.phone
+      });
 
       // change route to home
       router.push('/home');
     },
     async logout({ commit }) {
       await userService.logout();
-    
       // clear user and redirect to /login
       commit('setUser', {});
       router.push('/');
     },
     async handleShowSideBar({ commit }, showSideBar) {
       // set the show side bar value
-      console.log('showSideBar', showSideBar);
+      // console.log('showSideBar', showSideBar);
       commit('setShowSideBar', showSideBar);
     }
   },

@@ -9,7 +9,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 let createdApp;
 auth.onAuthStateChanged(user => {
-    console.log('hi', user);
     if (!createdApp) {        
         createdApp = createApp(App)
             .use(store)
@@ -18,6 +17,10 @@ auth.onAuthStateChanged(user => {
     }
 
     if (user) {
-        store.dispatch('setCurrentUser', user);
+        store.dispatch('setCurrentUser', user)
+            .catch(err => {
+                console.error('error making setCurrentUser', err);
+                store.dispatch('logout');
+            });
     }
 });

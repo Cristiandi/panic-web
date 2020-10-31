@@ -30,8 +30,6 @@ class UserService {
         fullName,
         password
     }) {
-        console.log('EXECUTING REGISTER');
-        
         const response = await axios({
             url: `${this.baseUrl}users`,
             method: 'post',
@@ -51,20 +49,17 @@ class UserService {
         };
     }
 
-    async login ({ email, password }) {
-        console.log('EXECUTING LOGIN');
+    async login({ email, password }) {
         const { user } = await auth.signInWithEmailAndPassword(email, password);
 
         return user;
     }
 
     async logout() {
-        await auth.signOut();
+        if (auth.currentUser) await auth.signOut();
     }
 
     async resetPassword({ email }) {
-        console.log('EXECUTING RESET PASSWORD');
-
         const response = await axios({
             url: `${this.baseUrl}users/send-forgotten-password-email`,
             method: 'post',
@@ -80,8 +75,6 @@ class UserService {
     }
 
     async changePassword({ email, oldPassword, newPassword }) {
-        console.log('EXECUTING RESET PASSWORD');
-
         // en esta funcion necesito obtener el token, porque el usuario necesita
         // estar loggeado para poder realizar esta accion y la manera en la que el backen válida eso
         // es mediante el token de el usuario.
@@ -108,9 +101,23 @@ class UserService {
         return {
             ...response.data,
             message: 'Tú clave a sido actualizada.'
-            };
-        }
-    } 
+        };
+    }
+
+    async me({ uuid }) {
+        const token = await this.getTokenFromCurrentUser();
+
+        const response = await axios({
+            url: `${this.baseUrl}users/me/${uuid}`,
+            method: 'get',
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        return response.data;
+    }
+}
 
 
 export const userService = new UserService();

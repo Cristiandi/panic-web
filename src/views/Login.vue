@@ -100,6 +100,9 @@
 import { Field, Form } from 'vee-validate';
 import * as Yup from 'yup';
 
+import { userService } from '../modules/users/users.service';
+import { getFromObjectPathParsed } from '../utils';
+
 export default {
   name: 'Login',
   data() {
@@ -129,7 +132,7 @@ export default {
   },
   methods: {
     async onSubmit(args) {
-      console.log('args', args);
+      // console.log('args', args);
 
       this.loading = true;
 
@@ -141,8 +144,11 @@ export default {
           password
         });
       } catch (error) {
-        console.log('error making the logiun', error);
-        this.message = error.message;
+        console.error('error making the login', error);
+        await userService.logout();
+        this.message =
+          getFromObjectPathParsed(error, 'response.data.message') ||
+          error.message;
       }
 
       this.loading = false;

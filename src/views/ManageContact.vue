@@ -12,10 +12,12 @@
           <div class="form-group">
             <div class="row">
               <div class="col-6">
-                <label for="fullname" class="font-weight-bold">Nombre Completo.</label>
+                <label for="fullname" class="font-weight-bold"
+                  >Nombre completo</label
+                >
               </div>
               <div class="col-6 text-right">
-                <small for="fullnameContact" class="font-weight-lighter"
+                <small for="fullName" class="font-weight-lighter"
                   >Nombre de tu contacto</small
                 >
               </div>
@@ -23,40 +25,43 @@
             <Field
               type="text"
               class="form-control"
-              id="fullnameContact"
-              name="fullnameContact"
+              id="fullName"
+              name="fullName"
               as="input"
-              v-model="data.email"
+              v-model="data.fullName"
             />
-            <span class="validation">{{ errors.email }}</span>
+            <span class="validation">{{ errors.fullName }}</span>
           </div>
-        <div class="form-group">
+          <div class="form-group">
             <div class="row">
               <div class="col-6">
-                <label for="emailContact" class="font-weight-bold">Email</label>
+                <label for="email" class="font-weight-bold">Email</label>
               </div>
               <div class="col-6 text-right">
-                <small for="emailContact" class="font-weight-lighter"
-                  > Email de Contacto.</small
+                <small for="email" class="font-weight-lighter">
+                  Email del contacto.</small
                 >
               </div>
             </div>
             <Field
               type="text"
               class="form-control"
-              id="emailContact"
-              name="emailContact"
+              id="email"
+              name="email"
               as="input"
+              v-model="data.email"
             />
-            <span class="validation">{{ errors.emailContact }}</span>
-        </div>
-        <div class="form-group">
+            <span class="validation">{{ errors.email }}</span>
+          </div>
+          <div class="form-group">
             <div class="row">
               <div class="col-6">
-                <label for="numberContact" class="font-weight-bold">Numero Celular</label>
+                <label for="phoneNumber" class="font-weight-bold"
+                  >Numero Celular</label
+                >
               </div>
               <div class="col-6 text-right">
-                <small for="numberContact" class="font-weight-lighter"
+                <small for="phoneNumber" class="font-weight-lighter"
                   >Numero de contacto.</small
                 >
               </div>
@@ -64,12 +69,13 @@
             <Field
               type="text"
               class="form-control"
-              id="numberContact"
-              name="numberContact"
+              id="phoneNumber"
+              name="phoneNumber"
               as="input"
+              v-model="data.phoneNumber"
             />
-            <span class="validation">{{ errors.emailContact }}</span>
-        </div>
+            <span class="validation">{{ errors.phoneNumber }}</span>
+          </div>
 
           <div v-if="message" class="form-group">
             <div
@@ -96,18 +102,37 @@
   </div>
 </template>
 
+<style scoped>
+.centered {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.validation {
+  color: red;
+}
+</style>
+
 <script>
+import { mapState } from 'vuex';
 import { Field, Form } from 'vee-validate';
 import * as Yup from 'yup';
-import { userService } from '../modules/users/users.service';
-//esta importacion que es lo que hace ?
+
+import { contactService } from '../modules/users/contacts.service';
 import { getFromObjectPathParsed } from '../utils';
+
 export default {
   name: 'ManageContact',
   data() {
     return {
       data: {
-        
+        id: 0,
+        email: '',
+        phoneNumber: '',
+        fullName: '',
+        userId: 0
       },
       successful: false,
       loading: false,
@@ -118,35 +143,87 @@ export default {
     Field,
     Form
   },
+  computed: mapState({
+    currentUser: (state) => state.user
+  }),
   setup() {
     // Using yup to generate a validation schema
     const schema = Yup.object().shape({
-      
+      fullName: Yup.string().min(5).required(),
+      email: Yup.string().email().required(),
+      phoneNumber: Yup.number().required()
     });
 
     return {
       schema
     };
   },
+  async created() {
+    this.loading = true;
+
+    try {
+      this.data.userId = this.currentUser.id;
+
+      const result = await contactService.getContact({
+        userId: this.currentUser.id
+      });
+
+      if (result) {
+        this.data.id = result.id;
+        this.data.email = result.email;
+        this.data.phoneNumber = result.phone;
+        this.data.fullName = result.full_name;
+      }
+    } catch (error) {
+      this.successful = false;
+      this.message =
+        getFromObjectPathParsed(error, 'response.data.message') ||
+        error.message;
+    }
+
+    this.loading = false;
+  },
   methods: {
     async onSubmit(args) {
-      console.log('args', args);
+      // console.log('args', args);
 
       this.loading = true;
 
       try {
-        const { message } = await userService.resetPassword({
-          email: this.data.email
-        });
+        const { id, userId, email, phoneNumber, fullName } = this.data;
+
+        let result;
+        if (id) {
+          result = await contactService.updateContact({
+            userId,
+            email,
+            phone: phoneNumber,
+            fullName
+          });
+        } else {
+          result = await contactService.createContact({
+            userId,
+            email,
+            phone: phoneNumber,
+            fullName
+          });
+        }
+
+        this.data.id = result.id;
+        this.data.email = result.email;
+        this.data.phoneNumber = result.phone;
+        this.data.fullName = result.full_name;
+        this.data.userId = result.user_id;
+
         this.successful = true;
-        this.message = message;
+        this.message = result.message;
       } catch (error) {
         this.successful = false;
-        console.log('error', error.response);
         this.message =
           getFromObjectPathParsed(error, 'response.data.message') ||
           error.message;
       }
+
       this.loading = false;
     }
   }

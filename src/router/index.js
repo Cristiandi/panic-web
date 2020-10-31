@@ -30,6 +30,14 @@ const routes = [
     component: ForgottenPassword
   },
   {
+    name: 'Home',
+    path: '/home',
+    component: Home,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
     path: '/change-password',
     name: 'ChangePassword',
     component: ChangePassword,
@@ -41,14 +49,6 @@ const routes = [
     path: '/manage-contact',
     name: 'ManageContact',
     component: ManageContact,
-    meta: {
-      requiresAuth: true
-    }
-  },
-  {
-    name: 'Home',
-    path: '/home',
-    component: Home,
     meta: {
       requiresAuth: true
     }
