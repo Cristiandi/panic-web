@@ -11,9 +11,9 @@
         <span class="font-weight-bold">Hola Usuario</span>
       </div>
       <div>
-        <router-link class="font-weight-bold" to="/home">Edita tús datos.</router-link>
-        <router-link class="font-weight-bold" to="/home">Cambia tú clave.</router-link>
-        <router-link class="font-weight-bold" to="/home">Maneja tús contactos.</router-link>
+        <router-link class="font-weight-bold" @click="closeSideBar" to="/manage-contact">Edita tús datos.</router-link>
+        <router-link class="font-weight-bold" @click="closeSideBar" to="/change-password">Cambia tú clave.</router-link>
+        <router-link class="font-weight-bold" @click="closeSideBar" to="/home">Maneja tús contactos.</router-link>
       </div>
     </div>
 
