@@ -17,6 +17,7 @@ auth.onAuthStateChanged(user => {
     }
 
     if (user) {
+        router.push('/home');
         store.dispatch('setCurrentUser', user)
             .catch(err => {
                 console.error('error making setCurrentUser', err);

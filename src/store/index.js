@@ -17,22 +17,14 @@ export default createStore({
     }
   },
   actions: {
-    async signup({ dispatch }, data) {
-      // register the user
-      const user = await userService.register({
-        email: data.email,
-        fullName: data.fullName,
-        password: data.password,
-        phone: data.phone
-      });
-
-      dispatch('setCurrentUser', user);
-    },
     async login({ dispatch }, { email, password }) {
       // sign user in
       const user = await userService.login({ email, password });
 
       await dispatch('setCurrentUser', user);
+
+      // change route to home
+      router.push('/home');
     },
     async setCurrentUser({ commit }, user) {
       const meInformation = await userService.me({ uuid: user.uid });
@@ -45,9 +37,6 @@ export default createStore({
         firstName: meInformation.full_name.split(' ')[0],
         phone: meInformation.phone
       });
-
-      // change route to home
-      router.push('/home');
     },
     async logout({ commit }) {
       await userService.logout();

@@ -4,7 +4,9 @@
 
     <div>
       <div class="text-center">
-        <img src="../assets/logo.png" alt="logo" />
+        <router-link @click="closeSideBar" to="/home">
+          <img src="../assets/logo.png" alt="logo" />
+        </router-link>
       </div>
       <br/>
       <div class="text-center">

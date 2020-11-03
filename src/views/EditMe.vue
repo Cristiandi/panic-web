@@ -12,73 +12,48 @@
           <div class="form-group">
             <div class="row">
               <div class="col-6">
-                <label for="oldPassword" class="font-weight-bold"
-                  >Clave Actual</label
+                <label for="fullName" class="font-weight-bold"
+                  >Nombre Completo</label
                 >
               </div>
               <div class="col-6 text-right">
-                <small for="oldPassword" class="font-weight-lighter"
-                  >Pon tú clave actual aqui.</small
+                <small for="fullName" class="font-weight-lighter"
+                  >Escribe tú nombre.</small
                 >
               </div>
             </div>
             <Field
-              type="password"
+              type="text"
               class="form-control"
-              id="oldPassword"
-              name="oldPassword"
+              id="fullName"
+              name="fullName"
               as="input"
-              v-model="data.oldPassword"
+              v-model="data.fullName"
             />
-            <span class="validation">{{ errors.oldPassword }}</span>
+            <span class="validation">{{ errors.fullName }}</span>
           </div>
-
           <div class="form-group">
             <div class="row">
               <div class="col-6">
-                <label for="new-password" class="font-weight-bold"
-                  >Clave Nueva</label
+                <label for="confirmPassword" class="font-weight-bold"
+                  >Número de contacto</label
                 >
               </div>
               <div class="col-6 text-right">
-                <small for="new-password" class="font-weight-lighter"
-                  >Pon tú clave nueva aqui.</small
+                <small for="confirmPassword" class="font-weight-lighter"
+                  >Tú número celular</small
                 >
               </div>
             </div>
             <Field
-              type="password"
+              type="number"
               class="form-control"
-              id="newPassword"
-              name="newPassword"
+              id="phoneNumber"
+              name="phoneNumber"
               as="input"
-              v-model="data.newPassword"
+              v-model="data.phoneNumber"
             />
-            <span class="validation">{{ errors.newPassword }}</span>
-          </div>
-
-          <div class="form-group">
-            <div class="row">
-              <div class="col-6">
-                <label for="newPasswordConfirm" class="font-weight-bold"
-                  >Confirma Clave</label
-                >
-              </div>
-              <div class="col-6 text-right">
-                <small for="newPasswordConfirm" class="font-weight-lighter"
-                  >Repitela.</small
-                >
-              </div>
-            </div>
-            <Field
-              type="password"
-              class="form-control"
-              id="newPasswordConfirm"
-              name="newPasswordConfirm"
-              as="input"
-              v-model="data.newPasswordConfirm"
-            />
-            <span class="validation">{{ errors.newPasswordConfirm }}</span>
+            <span class="validation">{{ errors.phoneNumber }}</span>
           </div>
           <div v-if="message" class="form-group">
             <div
@@ -105,35 +80,22 @@
   </div>
 </template>
 
-<style scoped>
-.centered {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-height: 100vh;
-}
-
-.validation {
-  color: red;
-}
-</style>
-
 <script>
-import { mapState } from 'vuex';
-import { Field, Form } from 'vee-validate';
 import * as Yup from 'yup';
+import { Field, Form } from 'vee-validate';
+import { mapState } from 'vuex';
 
 import { userService } from '../modules/users/users.service';
 import { getFromObjectPathParsed } from '../utils';
 
 export default {
-  name: 'ChangePassword',
+  name: 'EditMe',
   data() {
     return {
       data: {
-        oldPassword: '',
-        newPassword: '',
-        newPasswordConfirm: ''
+        id: 0,
+        fullName: '',
+        phoneNumber: ''
       },
       successful: false,
       loading: false,
@@ -146,36 +108,40 @@ export default {
   },
   computed: mapState({
     currentUser: state => state.user
-  }), 
+  }),
   setup() {
-    // Using yup to generate a validation schema
     const schema = Yup.object().shape({
-      oldPassword: Yup.string().required(),
-      newPassword: Yup.string().min(6).required(),
-      newPasswordConfirm: Yup.string()
-        .required()
-        .oneOf([Yup.ref('newPassword')], 'Passwords do not match')
+      fullName: Yup.string().min(5).required(),
+      phoneNumber: Yup.string().min(10).max(10).required()
     });
 
     return {
       schema
     };
   },
+  async created() {
+    if (this.currentUser.id) {
+      this.data.id = this.currentUser.id;
+      this.data.fullName = this.currentUser.fullName;
+      this.data.phoneNumber = this.currentUser.phone ? this.currentUser.phone : '';
+      console.log('this.data.phoneNumber', this.data.phoneNumber.length);
+    }
+  },
   methods: {
     async onSubmit(args) {
-      // console.log('args', args);
-
       this.loading = true;
 
       try {
-        
-        const { message } = await userService.changePassword({
-          email: this.currentUser.email,
-          oldPassword: this.data.oldPassword,
-          newPassword: this.data.newPassword
+        const result = await userService.update({
+          id: this.data.id,
+          fullName: this.data.fullName,
+          phone: this.data.phoneNumber
         });
+
+        await this.$store.dispatch('setCurrentUser', this.currentUser);
+
         this.successful = true;
-        this.message = message;
+        this.message = result.message;
       } catch (error) {
         this.successful = false;
         this.message =
@@ -189,3 +155,15 @@ export default {
 };
 </script>
 
+<style scoped>
+.centered {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.validation {
+  color: red;
+}
+</style>

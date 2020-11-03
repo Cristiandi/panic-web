@@ -9,6 +9,7 @@ import Home from '../views/Home';
 import ForgottenPassword from '../views/ForgottenPassword.vue';
 import ChangePassword from '../views/ChangePassword.vue';
 import ManageContact from '../views/ManageContact.vue';
+import EditMe from '../views/EditMe.vue';
 
 const routes = [
   {
@@ -49,6 +50,14 @@ const routes = [
     path: '/manage-contact',
     name: 'ManageContact',
     component: ManageContact,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/edit-me',
+    name: 'EditMe',
+    component: EditMe,
     meta: {
       requiresAuth: true
     }
