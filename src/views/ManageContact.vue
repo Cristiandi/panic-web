@@ -120,7 +120,7 @@ import { mapState } from 'vuex';
 import { Field, Form } from 'vee-validate';
 import * as Yup from 'yup';
 
-import { contactService } from '../modules/users/contacts.service';
+import { contactService } from '../modules/contacts/contacts.service';
 import { getFromObjectPathParsed } from '../utils';
 
 export default {
